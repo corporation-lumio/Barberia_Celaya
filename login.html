@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Acceso — Nikos Barber</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  body {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .login-wrap { width: 100%; max-width: 400px; padding: 24px; }
+  .login-marca { display: flex; align-items: center; gap: 12px; justify-content: center; margin-bottom: 34px; }
+  .login-marca img { height: 42px; width: auto; }
+  .login-marca span { font-size: 21px; font-style: italic; }
+  .login-card {
+    background: var(--negro-alt);
+    border: 1px solid var(--linea);
+    border-radius: var(--radio);
+    padding: 34px 30px;
+  }
+  .login-card h1 { font-weight: 400; font-size: 21px; margin-bottom: 6px; text-align:center; }
+  .login-card p.sub { color: var(--tinta); font-size: 14px; text-align:center; margin-bottom: 26px; }
+  .ayuda {
+    margin-top: 20px;
+    font-size: 12px;
+    color: var(--tinta);
+    text-align: center;
+    border-top: 1px solid var(--linea-suave);
+    padding-top: 16px;
+    line-height: 1.7;
+  }
+  .volver { display:block; text-align:center; margin-top:20px; font-size:13px; color:var(--tinta); text-decoration:none; }
+  .volver:hover { color: var(--dorado-claro); }
+  .error-msg {
+    display: none;
+    background: rgba(154,59,59,0.1);
+    border: 1px solid rgba(184,110,110,0.3);
+    color: #c98c8c;
+    padding: 10px 12px;
+    border-radius: var(--radio);
+    font-size: 13px;
+    margin-bottom: 18px;
+  }
+</style>
+</head>
+<body>
+
+<div class="login-wrap">
+  <div class="login-marca marca">
+    <img src="logo.png" alt="" onerror="this.style.display='none'; document.getElementById('marca-fallback').style.display='flex';">
+    <div class="pole" id="marca-fallback" style="display:none;"></div>
+    <span class="display">Nikos Barber</span>
+  </div>
+
+  <div class="login-card">
+    <h1>Acceso del equipo</h1>
+    <p class="sub">Entra con tu usuario para ver tus citas, o como dueño para ver todo el negocio.</p>
+
+    <div class="error-msg" id="error-msg">Usuario o contraseña incorrectos.</div>
+
+    <form id="form-login">
+      <div class="campo">
+        <label for="usuario">Usuario</label>
+        <input type="text" id="usuario" required autocomplete="username" placeholder="tu usuario">
+      </div>
+      <div class="campo">
+        <label for="clave">Contraseña</label>
+        <input type="password" id="clave" required autocomplete="current-password" placeholder="••••••••">
+      </div>
+      <button type="submit" class="btn btn-dorado" style="width:100%;">Entrar</button>
+    </form>
+
+    <div class="ayuda">
+      Demo dueño: <strong class="mono">dueno</strong> / <strong class="mono">nikos2026</strong><br>
+      Demo barbero: <strong class="mono">rodolfo</strong> / <strong class="mono">corte123</strong><br>
+      (edítalo en <span class="mono">data.js</span>, o desde el panel de empleados)
+    </div>
+  </div>
+
+  <a href="index.html" class="volver">&larr; Volver al sitio</a>
+</div>
+
+<script type="module">
+  import { DB } from './data.js';
+
+  if (DB.haySesion()) {
+    window.location.href = 'admin.html';
+  }
+
+  document.getElementById('form-login').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const usuario = document.getElementById('usuario').value.trim();
+    const clave = document.getElementById('clave').value;
+    const errorMsg = document.getElementById('error-msg');
+    const btn = e.target.querySelector('button[type="submit"]');
+    btn.disabled = true;
+    btn.textContent = 'Entrando…';
+
+    const resultado = await DB.iniciarSesion(usuario, clave);
+    if (resultado) {
+      window.location.href = 'admin.html';
+    } else {
+      errorMsg.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'Entrar';
+    }
+  });
+</script>
+
+</body>
+</html>

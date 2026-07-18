@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nikos Barber</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  header {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(11,11,12,0.9);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--linea-suave);
+  }
+  .nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 0;
+  }
+  .marca { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+  .marca img { height: 40px; width: auto; }
+  .marca span { font-size: 19px; }
+  .nav-links { display: flex; gap: 32px; align-items: center; }
+  .nav-links a { text-decoration: none; color: var(--tinta); font-size: 14px; font-weight: 500; }
+  .nav-links a:hover { color: var(--dorado-claro); }
+
+  .hero {
+    padding: 70px 0 90px;
+  }
+
+  .marca-hero {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 44px;
+  }
+  .marca-hero-halo {
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 300px; height: 300px;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(circle, rgba(201,175,124,0.18) 0%, rgba(201,175,124,0.06) 45%, transparent 72%);
+    filter: blur(2px);
+    pointer-events: none;
+    animation: haloPulso 4.5s ease-in-out infinite;
+  }
+  @keyframes haloPulso {
+    0%, 100% { opacity: 0.7; transform: translate(-50%, -50%) scale(0.96); }
+    50%      { opacity: 1;   transform: translate(-50%, -50%) scale(1.04); }
+  }
+  .marca-hero-logo {
+    position: relative;
+    height: 128px;
+    width: auto;
+    z-index: 1;
+    filter:
+      drop-shadow(0 0 14px rgba(201,175,124,0.55))
+      drop-shadow(0 0 34px rgba(201,175,124,0.28));
+    animation: marcaAparece 1s cubic-bezier(.2,.8,.2,1) both;
+  }
+  .marca-hero-fallback {
+    position: relative;
+    z-index: 1;
+    width: 128px;
+    height: 128px;
+    font-size: 52px;
+  }
+  .marca-hero-linea {
+    width: 40px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--dorado), transparent);
+    margin-top: 22px;
+  }
+
+  @media (max-width: 640px) {
+    .marca-hero-logo { height: 84px; }
+    .marca-hero-fallback { width: 84px; height: 84px; font-size: 34px; }
+    .marca-hero-halo { width: 210px; height: 210px; }
+  }
+
+  .eyebrow {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--tinta);
+    margin-bottom: 24px;
+  }
+  .hero h1 {
+    font-weight: 300;
+    font-size: clamp(40px, 5.2vw, 68px);
+    line-height: 1.08;
+    margin-bottom: 26px;
+  }
+  .hero h1 em { color: var(--dorado-claro); font-style: italic; }
+  .hero p { color: var(--tinta); font-size: 17px; max-width: 460px; margin-bottom: 34px; font-weight: 400; }
+  .hero-cta { display: flex; gap: 14px; flex-wrap: wrap; }
+  .hero-stats { display: flex; gap: 40px; margin-top: 56px; padding-top: 32px; border-top: 1px solid var(--linea-suave); }
+  .hero-stats div span { display: block; font-family: 'Fraunces', serif; font-style: italic; font-weight: 400; font-size: 26px; color: var(--dorado-claro); }
+  .hero-stats div small { color: var(--tinta); font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; }
+
+  .hero-visual {
+    background: var(--negro-alt);
+    border: 1px solid var(--linea);
+    border-radius: var(--radio);
+    padding: 34px;
+  }
+  .hero-visual .ticket-eyebrow { margin-bottom: 10px; }
+
+  section { padding: 90px 0; }
+  .seccion-titulo { text-align: center; margin-bottom: 56px; }
+  .seccion-titulo h2 { font-weight: 300; font-size: clamp(28px, 4vw, 38px); margin-bottom: 12px; }
+  .seccion-titulo p { color: var(--tinta); }
+
+  .servicios-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1px;
+    background: var(--linea-suave);
+    border: 1px solid var(--linea-suave);
+  }
+  .servicio-card {
+    background: var(--negro);
+    padding: 28px 24px;
+    transition: background .15s ease;
+  }
+  .servicio-card:hover { background: var(--negro-alt); }
+  .servicio-card h3 { font-family: 'Fraunces', serif; font-weight: 400; font-size: 19px; margin-bottom: 6px; }
+  .servicio-card .precio { font-family: 'Fraunces', serif; font-style: italic; color: var(--dorado-claro); font-size: 21px; margin-top: 16px; display: block; }
+  .servicio-card .minutos { color: var(--tinta); font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase; }
+
+  #agendar { background: var(--negro-alt); border-top: 1px solid var(--linea-suave); border-bottom: 1px solid var(--linea-suave); }
+  .agendar-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: start; }
+  .fila-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .fila-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+  .ayuda-campo { font-size: 12px; color: var(--tinta); margin-top: -12px; margin-bottom: 18px; }
+
+  .modalidad-grupo { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .modalidad-opcion {
+    display: flex; align-items: center; gap: 8px;
+    border: 1px solid var(--linea-suave);
+    border-radius: var(--radio);
+    padding: 12px 14px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: border-color .15s ease, background .15s ease;
+  }
+  .modalidad-opcion:has(input:checked) { border-color: var(--dorado); background: rgba(169,136,79,0.06); }
+  .modalidad-opcion input { width: auto; margin: 0; accent-color: var(--dorado); }
+  .modalidad-opcion em { display: block; font-style: normal; color: var(--dorado-claro); font-size: 11.5px; margin-top: 2px; }
+
+  .precio-total {
+    text-align: right;
+    font-size: 14px;
+    color: var(--tinta);
+    margin: -6px 0 18px;
+  }
+  .precio-total strong { color: var(--dorado-claro); font-family: 'Fraunces', serif; font-style: italic; font-size: 18px; font-weight: 400; }
+
+  .horarios-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+    gap: 8px;
+    margin-top: 6px;
+  }
+  .hora-btn {
+    padding: 10px 4px;
+    text-align: center;
+    border: 1px solid var(--linea-suave);
+    border-radius: var(--radio);
+    background: transparent;
+    color: var(--marfil);
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all .12s ease;
+  }
+  .hora-btn:hover:not(.ocupada) { border-color: var(--dorado); }
+  .hora-btn.activa { background: var(--dorado); color: var(--negro); border-color: var(--dorado); font-weight: 600; }
+  .hora-btn.ocupada { opacity: 0.25; cursor: not-allowed; text-decoration: line-through; }
+
+  #resultado-ticket { display: none; }
+  .ticket-acciones { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+  .ticket-acciones .btn { flex: 1; padding: 12px 16px; font-size: 13px; }
+  .seguimiento-nota { font-size: 13px; color: var(--tinta); margin-top: 16px; }
+  .seguimiento-nota a { color: var(--dorado-claro); text-decoration: none; border-bottom: 1px solid var(--dorado-op); }
+
+  footer {
+    border-top: 1px solid var(--linea-suave);
+    padding: 34px 0;
+    color: var(--tinta);
+    font-size: 13px;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  footer a { color: var(--tinta); text-decoration: none; margin-left: 20px; }
+  footer a:hover { color: var(--dorado-claro); }
+
+  @media (max-width: 860px) {
+    .hero { grid-template-columns: 1fr; padding-top: 50px; }
+    .agendar-grid { grid-template-columns: 1fr; gap: 34px; }
+    .fila-2, .fila-3 { grid-template-columns: 1fr; }
+    .hero-stats { flex-wrap: wrap; }
+  }
+
+  @media (max-width: 640px) {
+    .nav { padding: 14px 0; }
+    .nav-links { gap: 16px; flex-wrap: wrap; justify-content: flex-end; }
+    .nav-links a { font-size: 12.5px; }
+    .marca span { display: none; } /* en pantallas chicas, solo el logo */
+    .marca img { height: 32px; }
+
+    .hero { padding: 40px 0 60px; }
+    .hero-cta { flex-direction: column; }
+    .hero-cta .btn { width: 100%; }
+    .hero-stats { gap: 24px; row-gap: 14px; }
+
+    .modalidad-grupo { grid-template-columns: 1fr; }
+    .ticket-acciones { flex-direction: column; }
+    .ticket-acciones .btn { flex: none; width: 100%; }
+    .precio-total { text-align: left; }
+
+    .servicio-card { padding: 22px 18px; }
+    section { padding: 56px 0; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a href="index.html" class="marca">
+      <img src="logo.png" alt="Nikos Barber" onerror="this.style.display='none'; document.getElementById('marca-fallback').style.display='flex';">
+      <div class="pole" id="marca-fallback" style="display:none;"></div>
+      <span class="display">Nikos Barber</span>
+    </a>
+    <nav class="nav-links">
+      <a href="#servicios">Servicios</a>
+      <a href="#agendar">Agendar</a>
+      <a href="seguimiento.html">Mi cita</a>
+      <a href="login.html">Equipo</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <div class="marca-hero">
+      <div class="marca-hero-halo"></div>
+      <img src="logo.png" alt="Nikos Barber" class="marca-hero-logo" onerror="this.style.display='none'; document.getElementById('marca-hero-fallback').style.display='flex';">
+      <div class="pole marca-hero-fallback" id="marca-hero-fallback" style="display:none;"></div>
+      <div class="marca-hero-linea"></div>
+    </div>
+  </div>
+  <div class="wrap" style="display:grid; grid-template-columns: 1.1fr 0.9fr; gap:50px; align-items:center;">
+    <div>
+      <div class="eyebrow">Barbería de barrio · desde el sillón de siempre</div>
+      <h1>Un buen corte <br><em>empieza</em> con un buen turno.</h1>
+      <p>Agenda tu cita en menos de un minuto. Sin llamadas, sin esperar en la puerta — eliges hora, barbero y servicio, y te llevas tu ticket de turno.</p>
+      <div class="hero-cta">
+        <a href="#agendar" class="btn btn-dorado">Agendar mi cita</a>
+        <a href="#servicios" class="btn btn-fantasma">Ver servicios</a>
+      </div>
+      <div class="hero-stats" id="hero-stats">
+        <div><span id="stat-barberos">—</span><small>Barberos</small></div>
+        <div><span>5</span><small>Servicios</small></div>
+        <div><span id="stat-calif">—</span><small>Calificación</small></div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="ticket-eyebrow">Turno de ejemplo</div>
+      <div class="ticket-numero">№ 118</div>
+      <div class="ticket-perforado">
+        <p style="margin:0 0 6px; color:var(--tinta); font-size:14px;">Corte + barba con <strong style="color:var(--marfil); font-weight:500;">Toño</strong></p>
+        <p style="margin:0; color:var(--dorado-claro); font-size:14px;">Vie 18 jul · 17:30</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="servicios">
+  <div class="wrap">
+    <div class="seccion-titulo">
+      <h2>Servicios</h2>
+      <p>Precios claros, sin sorpresas en la silla.</p>
+    </div>
+    <div class="servicios-grid" id="lista-servicios"></div>
+  </div>
+</section>
+
+<section id="agendar">
+  <div class="wrap">
+    <div class="seccion-titulo">
+      <h2>Agenda tu turno</h2>
+      <p>Elige barbero, servicio, día y hora disponible.</p>
+    </div>
+
+    <div class="agendar-grid">
+      <form id="form-cita">
+        <div class="fila-2">
+          <div class="campo">
+            <label for="nombre">Nombre</label>
+            <input type="text" id="nombre" required placeholder="Tu nombre">
+          </div>
+          <div class="campo">
+            <label for="telefono">Teléfono / WhatsApp</label>
+            <input type="tel" id="telefono" required placeholder="4611234567">
+          </div>
+        </div>
+
+        <div class="fila-2">
+          <div class="campo">
+            <label for="servicio">Servicio</label>
+            <select id="servicio" required></select>
+          </div>
+          <div class="campo">
+            <label for="barbero">Barbero</label>
+            <select id="barbero" required></select>
+          </div>
+        </div>
+        <p class="ayuda-campo" id="ayuda-barbero">¿No conoces a los barberos? Deja "Cualquiera disponible" y te asignamos uno de forma equitativa.</p>
+
+        <div class="campo" id="campo-modalidad" style="display:none;">
+          <label>¿Dónde te atendemos?</label>
+          <div class="modalidad-grupo">
+            <label class="modalidad-opcion">
+              <input type="radio" name="modalidad" value="local" checked>
+              <span>En el local</span>
+            </label>
+            <label class="modalidad-opcion">
+              <input type="radio" name="modalidad" value="domicilio">
+              <span>A domicilio <em id="texto-recargo"></em></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="campo">
+          <label for="fecha">Fecha</label>
+          <input type="date" id="fecha" required>
+        </div>
+
+        <div class="campo">
+          <label>Hora disponible</label>
+          <div class="horarios-grid" id="horarios"></div>
+          <input type="hidden" id="hora" required>
+        </div>
+
+        <div class="campo">
+          <label for="notas">Notas (opcional)</label>
+          <textarea id="notas" rows="2" placeholder="Ej. tijera sobre las orejas, no muy corto de arriba..."></textarea>
+        </div>
+
+        <p class="precio-total" id="precio-total"></p>
+
+        <button type="submit" class="btn btn-dorado" style="width:100%;">Confirmar turno</button>
+      </form>
+
+      <div>
+        <div class="ticket" id="resultado-ticket">
+          <div class="ticket-eyebrow">Tu turno quedó agendado</div>
+          <div class="ticket-numero" id="tk-numero">№ —</div>
+          <div class="ticket-perforado">
+            <p style="margin:0 0 4px;"><strong id="tk-nombre"></strong></p>
+            <p style="margin:0 0 4px; color:var(--dorado-claro); font-weight:500;" id="tk-servicio"></p>
+            <p style="margin:0 0 4px; color:var(--tinta);" id="tk-barbero"></p>
+            <p style="margin:0 0 4px; color:var(--marfil); font-weight:500;" id="tk-fechahora"></p>
+            <p style="margin:0 0 4px; color:var(--tinta);" id="tk-modalidad"></p>
+            <p style="margin:0; color:var(--dorado-claro); font-weight:600;" id="tk-total"></p>
+          </div>
+          <div class="ticket-acciones">
+            <button type="button" class="btn btn-dorado" id="btn-descargar-pdf">Descargar ticket (PDF)</button>
+          </div>
+          <p class="seguimiento-nota">Con tu número de ticket y tu teléfono puedes <a href="seguimiento.html">darle seguimiento a tu cita y calificar el servicio</a> una vez que te atiendan.</p>
+        </div>
+        <div id="placeholder-ticket" style="color:var(--tinta); font-size:14px; padding-top: 20px;">
+          Al confirmar, aquí aparecerá tu ticket de turno con el número que te toca.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap" style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+    <span>Nikos Barber</span>
+    <span>
+      <a href="seguimiento.html">Mi cita</a>
+      <a href="login.html">Acceso del equipo</a>
+    </span>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script type="module">
+  import { DB, mostrarToast, formatearFecha } from './data.js';
+
+  // --- poblar selects de servicios y barberos ---
+  const selServicio = document.getElementById('servicio');
+  const selBarbero = document.getElementById('barbero');
+  const listaServicios = document.getElementById('lista-servicios');
+
+  const servicios = await DB.obtenerServicios();
+  servicios.forEach(s => {
+    const opt = document.createElement('option');
+    opt.value = s.id;
+    opt.textContent = `${s.nombre} — $${s.precio}`;
+    selServicio.appendChild(opt);
+
+    const card = document.createElement('div');
+    card.className = 'servicio-card';
+    card.innerHTML = `<h3>${s.nombre}</h3><span class="minutos">${s.minutos} min</span><span class="precio">$${s.precio}</span>`;
+    listaServicios.appendChild(card);
+  });
+
+  const barberosActivos = await DB.barberosActivos();
+
+  const optAuto = document.createElement('option');
+  optAuto.value = 'auto';
+  optAuto.textContent = 'Cualquiera disponible (recomendado)';
+  selBarbero.appendChild(optAuto);
+
+  barberosActivos.forEach(b => {
+    const opt = document.createElement('option');
+    opt.value = b.id;
+    opt.textContent = b.nombre;
+    selBarbero.appendChild(opt);
+  });
+
+  selBarbero.value = 'auto';
+
+  // --- modalidad (local / domicilio) ---
+  const configDomicilio = await DB.obtenerConfigDomicilio();
+  const campoModalidad = document.getElementById('campo-modalidad');
+  const textoRecargo = document.getElementById('texto-recargo');
+  const radiosModalidad = document.querySelectorAll('input[name="modalidad"]');
+
+  if (configDomicilio.activo) {
+    campoModalidad.style.display = 'block';
+    textoRecargo.textContent = `(+$${configDomicilio.recargo})`;
+  }
+
+  function modalidadActual() {
+    if (!configDomicilio.activo) return 'local';
+    const marcado = document.querySelector('input[name="modalidad"]:checked');
+    return marcado ? marcado.value : 'local';
+  }
+
+  function precioServicioActual() {
+    const opt = servicios.find(s => s.id === selServicio.value);
+    return opt ? opt.precio : 0;
+  }
+
+  function actualizarPrecioTotal() {
+    const base = precioServicioActual();
+    const esDomicilio = modalidadActual() === 'domicilio';
+    const total = base + (esDomicilio ? Number(configDomicilio.recargo) : 0);
+    const elPrecio = document.getElementById('precio-total');
+    elPrecio.innerHTML = esDomicilio
+      ? `Servicio $${base} + domicilio $${configDomicilio.recargo} = <strong>$${total}</strong>`
+      : `Total: <strong>$${total}</strong>`;
+  }
+
+  selServicio.addEventListener('change', actualizarPrecioTotal);
+  radiosModalidad.forEach(r => r.addEventListener('change', actualizarPrecioTotal));
+  actualizarPrecioTotal();
+
+  // --- stats del hero ---
+  document.getElementById('stat-barberos').textContent = barberosActivos.length;
+  const califGeneral = await DB.promedioCalificacion(null);
+  document.getElementById('stat-calif').textContent = califGeneral ? `${califGeneral.promedio}★` : 'Nueva';
+
+  // --- fecha mínima: hoy ---
+  const inputFecha = document.getElementById('fecha');
+  const hoy = new Date().toISOString().split('T')[0];
+  inputFecha.min = hoy;
+  inputFecha.value = hoy;
+
+  // --- horarios: se recalculan con datos EN VIVO de Firestore ---
+  // (así, si alguien agenda esa misma hora desde otro dispositivo,
+  // la cuadrícula se actualiza sola al instante, sin que tengas que
+  // tocar nada ni recargar la página)
+  const contHorarios = document.getElementById('horarios');
+  const inputHora = document.getElementById('hora');
+  const HORARIOS_DEL_DIA = await DB.obtenerHorarios();
+  let citasEnVivo = [];
+
+  function estaOcupada(barberoId, fecha, hora) {
+    return citasEnVivo.some(c =>
+      c.barberoId === barberoId && c.fecha === fecha && c.hora === hora && c.estado !== 'cancelada'
+    );
+  }
+
+  function hayLibreEnVivo(fecha, hora) {
+    return barberosActivos.some(b => !estaOcupada(b.id, fecha, hora));
+  }
+
+  function renderHorarios() {
+    inputHora.value = '';
+    const fecha = inputFecha.value;
+    const barberoId = selBarbero.value;
+
+    const disponibles = barberoId === 'auto'
+      ? HORARIOS_DEL_DIA.filter(h => hayLibreEnVivo(fecha, h))
+      : HORARIOS_DEL_DIA.filter(h => !estaOcupada(barberoId, fecha, h));
+
+    contHorarios.innerHTML = '';
+
+    if (disponibles.length === 0) {
+      const aviso = document.createElement('p');
+      aviso.style.cssText = 'color:var(--tinta); font-size:14px; grid-column: 1 / -1; margin:0;';
+      aviso.textContent = barberoId === 'auto'
+        ? 'No quedan horarios libres con ningún barbero en esta fecha. Prueba otro día.'
+        : 'No quedan horarios libres con este barbero en esta fecha. Prueba otro día o barbero.';
+      contHorarios.appendChild(aviso);
+      return;
+    }
+
+    disponibles.forEach(h => {
+      const btn = document.createElement('div');
+      btn.className = 'hora-btn';
+      btn.textContent = h;
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.hora-btn.activa').forEach(el => el.classList.remove('activa'));
+        btn.classList.add('activa');
+        inputHora.value = h;
+      });
+      contHorarios.appendChild(btn);
+    });
+  }
+
+  // conexión en tiempo real: cada vez que cambian las citas (desde
+  // cualquier dispositivo), se vuelve a pintar la cuadrícula sola
+  DB.escucharCitas((citas) => {
+    citasEnVivo = citas;
+    renderHorarios();
+  });
+
+  inputFecha.addEventListener('change', renderHorarios);
+  selBarbero.addEventListener('change', renderHorarios);
+
+  // --- envío del formulario ---
+  let ultimaCita = null;
+
+  document.getElementById('form-cita').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    if (!inputHora.value) {
+      mostrarToast('Elige un horario disponible.');
+      return;
+    }
+
+    const btnSubmit = e.target.querySelector('button[type="submit"]');
+    btnSubmit.disabled = true;
+    btnSubmit.textContent = 'Agendando…';
+
+    try {
+      let barberoId = selBarbero.value;
+
+      if (barberoId === 'auto') {
+        const asignado = await DB.asignarBarberoEquitativo(inputFecha.value, inputHora.value);
+        if (!asignado) {
+          mostrarToast('Justo se ocupó ese horario. Elige otra hora.');
+          renderHorarios();
+          btnSubmit.disabled = false;
+          btnSubmit.textContent = 'Confirmar turno';
+          return;
+        }
+        barberoId = asignado.id;
+      } else if (await DB.horaOcupada(barberoId, inputFecha.value, inputHora.value)) {
+        mostrarToast('Justo se ocupó ese horario con este barbero. Elige otro.');
+        renderHorarios();
+        btnSubmit.disabled = false;
+        btnSubmit.textContent = 'Confirmar turno';
+        return;
+      }
+
+      const cita = await DB.crearCita({
+        nombre: document.getElementById('nombre').value.trim(),
+        telefono: document.getElementById('telefono').value.trim(),
+        servicioId: selServicio.value,
+        barberoId: barberoId,
+        fecha: inputFecha.value,
+        hora: inputHora.value,
+        notas: document.getElementById('notas').value.trim(),
+        modalidad: modalidadActual()
+      });
+
+      ultimaCita = cita;
+      const servicio = await DB.servicio(cita.servicioId);
+      const barbero = await DB.barbero(cita.barberoId);
+
+      document.getElementById('tk-numero').textContent = `№ ${cita.numero}`;
+      document.getElementById('tk-nombre').textContent = cita.nombre;
+      document.getElementById('tk-servicio').textContent = `${servicio.nombre}`;
+      document.getElementById('tk-barbero').textContent = `Con ${barbero.nombre}`;
+      document.getElementById('tk-fechahora').textContent = `${formatearFecha(cita.fecha)} · ${cita.hora}`;
+      document.getElementById('tk-modalidad').textContent = cita.modalidad === 'domicilio' ? 'A domicilio' : 'En el local';
+      document.getElementById('tk-total').textContent = `Total: $${cita.precioTotal}`;
+
+      document.getElementById('resultado-ticket').style.display = 'block';
+      document.getElementById('placeholder-ticket').style.display = 'none';
+
+      mostrarToast(`¡Turno confirmado con ${barbero.nombre}! Guarda tu ticket.`);
+      e.target.reset();
+      inputFecha.value = hoy;
+      selBarbero.value = 'auto';
+      actualizarPrecioTotal();
+      btnSubmit.disabled = false;
+      btnSubmit.textContent = 'Confirmar turno';
+      renderHorarios();
+      document.getElementById('resultado-ticket').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    } catch (err) {
+      console.error(err);
+      mostrarToast(`No se pudo agendar: ${err.message || err}`);
+      btnSubmit.disabled = false;
+      btnSubmit.textContent = 'Confirmar turno';
+    }
+  });
+
+  // --- generación del ticket en PDF ---
+  function cargarLogoComoDataURL() {
+    return new Promise((resolve) => {
+      fetch('logo.png')
+        .then(r => { if (!r.ok) throw new Error('sin logo'); return r.blob(); })
+        .then(blob => {
+          const lector = new FileReader();
+          lector.onload = () => {
+            const img = new Image();
+            img.onload = () => resolve({ dataUrl: lector.result, w: img.naturalWidth, h: img.naturalHeight });
+            img.onerror = () => resolve(null);
+            img.src = lector.result;
+          };
+          lector.onerror = () => resolve(null);
+          lector.readAsDataURL(blob);
+        })
+        .catch(() => resolve(null));
+    });
+  }
+
+  async function generarTicketPDF(cita) {
+    const { jsPDF } = window.jspdf;
+    const anchoMM = 92, altoMM = 178;
+    const doc = new jsPDF({ unit: 'mm', format: [anchoMM, altoMM] });
+
+    const negro = [11, 11, 12];
+    const dorado = [169, 136, 79];
+    const doradoClaro = [201, 175, 124];
+    const marfil = [236, 231, 221];
+    const tinta = [134, 128, 122];
+
+    doc.setFillColor(...negro);
+    doc.rect(0, 0, anchoMM, altoMM, 'F');
+
+    doc.setDrawColor(...dorado);
+    doc.setLineWidth(0.3);
+    doc.rect(4, 4, anchoMM - 8, altoMM - 8);
+
+    let y = 16;
+
+    const logo = await cargarLogoComoDataURL();
+    if (logo) {
+      const anchoLogo = 26;
+      const altoLogo = anchoLogo * (logo.h / logo.w);
+      doc.addImage(logo.dataUrl, 'PNG', (anchoMM - anchoLogo) / 2, y, anchoLogo, altoLogo);
+      y += altoLogo + 8;
+    } else {
+      doc.setFont('times', 'italic');
+      doc.setFontSize(20);
+      doc.setTextColor(...doradoClaro);
+      doc.text('Nikos Barber', anchoMM / 2, y + 6, { align: 'center' });
+      y += 20;
+    }
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8);
+    doc.setTextColor(...tinta);
+    doc.text('T I C K E T   D E   T U R N O', anchoMM / 2, y, { align: 'center' });
+    y += 10;
+
+    doc.setFont('times', 'italic');
+    doc.setFontSize(34);
+    doc.setTextColor(...doradoClaro);
+    doc.text(`№ ${cita.numero}`, anchoMM / 2, y + 10, { align: 'center' });
+    y += 20;
+
+    doc.setDrawColor(...dorado);
+    doc.setLineWidth(0.2);
+    doc.setLineDashPattern([1, 1.2], 0);
+    doc.line(10, y, anchoMM - 10, y);
+    doc.setLineDashPattern([], 0);
+    y += 10;
+
+    const servicio = await DB.servicio(cita.servicioId);
+    const barbero = await DB.barbero(cita.barberoId);
+
+    const filas = [
+      ['Cliente', cita.nombre],
+      ['Servicio', servicio.nombre],
+      ['Barbero', barbero ? barbero.nombre : '—'],
+      ['Modalidad', cita.modalidad === 'domicilio' ? 'A domicilio' : 'En el local'],
+      ['Fecha', formatearFecha(cita.fecha)],
+      ['Hora', cita.hora],
+      ['Total', `$${cita.precioTotal}`]
+    ];
+    if (cita.notas) filas.push(['Notas', cita.notas]);
+
+    doc.setFontSize(9);
+    filas.forEach(([label, valor]) => {
+      doc.setTextColor(...tinta);
+      doc.setFont('helvetica', 'normal');
+      doc.text(label.toUpperCase(), 12, y);
+      doc.setTextColor(...marfil);
+      doc.setFont('helvetica', 'bold');
+      const lineas = doc.splitTextToSize(String(valor), anchoMM - 24);
+      doc.text(lineas, 12, y + 5);
+      y += 5 + (lineas.length * 4.6) + 3;
+    });
+
+    y += 6;
+    doc.setDrawColor(...dorado);
+    doc.setLineWidth(0.2);
+    doc.setLineDashPattern([1, 1.2], 0);
+    doc.line(10, y, anchoMM - 10, y);
+    doc.setLineDashPattern([], 0);
+    y += 9;
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7.5);
+    doc.setTextColor(...tinta);
+    const nota = `Guarda este ticket. Con el № ${cita.numero} y tu teléfono puedes darle seguimiento a tu cita y calificar el servicio en la sección "Mi cita" del sitio.`;
+    const lineasNota = doc.splitTextToSize(nota, anchoMM - 24);
+    doc.text(lineasNota, anchoMM / 2, y, { align: 'center' });
+
+    doc.save(`ticket-nikosbarber-${cita.numero}.pdf`);
+  }
+
+  document.getElementById('btn-descargar-pdf').addEventListener('click', () => {
+    if (!ultimaCita) return;
+    generarTicketPDF(ultimaCita);
+  });
+</script>
+
+</body>
+</html>

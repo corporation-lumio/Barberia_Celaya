@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel — Nikos Barber</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  header {
+    border-bottom: 1px solid var(--linea-suave);
+    background: var(--negro-alt);
+  }
+  .nav { display:flex; align-items:center; justify-content:space-between; padding: 18px 0; flex-wrap: wrap; gap: 14px; }
+  .marca { display:flex; align-items:center; gap:12px; text-decoration:none; }
+  .marca img { height: 38px; width: auto; }
+  .marca span { font-size: 18px; font-style: italic; color: var(--marfil); }
+  .nav-derecha { display:flex; align-items:center; gap:16px; flex-wrap: wrap; }
+  .nav-derecha a.link-panel { font-size: 13px; color: var(--tinta); text-decoration:none; border-bottom: 1px solid transparent; }
+  .nav-derecha a.link-panel:hover { color: var(--dorado-claro); border-color: var(--dorado-claro); }
+  .rol-chip {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--dorado-claro);
+    border: 1px solid var(--linea);
+    padding: 4px 10px;
+    border-radius: 100px;
+  }
+
+  main { padding: 44px 0 70px; }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1px;
+    background: var(--linea-suave);
+    border: 1px solid var(--linea-suave);
+    margin-bottom: 44px;
+  }
+  .stat-card { background: var(--negro); padding: 22px 20px; }
+  .stat-card .num { font-family: 'Fraunces', serif; font-style: italic; font-weight: 400; font-size: 30px; color: var(--dorado-claro); }
+  .stat-card .lbl { color: var(--tinta); font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 4px; }
+
+  .toolbar {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    align-items: end;
+    margin-bottom: 26px;
+    justify-content: space-between;
+  }
+  .toolbar-filtros { display: flex; gap: 14px; flex-wrap: wrap; }
+  .toolbar-filtros .campo { margin-bottom: 0; min-width: 160px; }
+
+  .tabla-wrap {
+    background: var(--negro-alt);
+    border: 1px solid var(--linea);
+    border-radius: var(--radio);
+    overflow: hidden;
+  }
+  table { width: 100%; border-collapse: collapse; }
+  thead th {
+    text-align: left;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--tinta);
+    font-weight: 500;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--linea);
+  }
+  tbody td {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--linea-suave);
+    font-size: 14px;
+    vertical-align: middle;
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: rgba(169,136,79,0.03); }
+  .num-turno { font-family: 'Fraunces', serif; font-style: italic; color: var(--dorado-claro); font-size: 16px; }
+  .estrellas-mini { color: var(--dorado-claro); font-size: 13px; letter-spacing: 1px; }
+  .celda-acciones { display: flex; gap: 8px; flex-wrap: wrap; }
+  .btn-mini {
+    padding: 6px 10px;
+    font-size: 12px;
+    border-radius: var(--radio);
+    border: 1px solid var(--linea);
+    background: transparent;
+    color: var(--marfil);
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+  }
+  .btn-mini:hover { border-color: var(--dorado); color: var(--dorado-claro); }
+  .btn-mini.eliminar:hover { border-color: #c98c8c; color: #e19a9a; }
+
+  .vacio {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--tinta);
+  }
+  .vacio .pole { margin: 0 auto 18px; }
+
+  select.filtro-select { padding: 10px 12px; font-size: 13px; }
+
+  .form-imprevista {
+    background: var(--negro-alt);
+    border: 1px solid var(--linea);
+    border-radius: var(--radio);
+    padding: 24px 22px;
+    margin-bottom: 30px;
+  }
+  .form-imprevista h3 { font-weight: 400; font-size: 17px; margin-bottom: 4px; }
+  .nota-imprevista { color: var(--tinta); font-size: 12.5px; margin-bottom: 18px; }
+  .fila-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+  @media (max-width: 720px) {
+    .tabla-wrap { overflow-x: auto; }
+    table { min-width: 880px; }
+    .fila-2 { grid-template-columns: 1fr; }
+    .nav-derecha { justify-content: flex-end; width: 100%; }
+    .marca span { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a href="admin.html" class="marca">
+      <img src="logo.png" alt="" onerror="this.style.display='none'; document.getElementById('marca-fallback').style.display='flex';">
+      <div class="pole" id="marca-fallback" style="display:none;"></div>
+      <span class="display">Nikos Barber · Panel</span>
+    </a>
+    <div class="nav-derecha">
+      <span class="rol-chip" id="chip-rol"></span>
+      <a href="empleados.html" class="link-panel" id="link-empleados" style="display:none;">Empleados</a>
+      <a href="ajustes.html" class="link-panel" id="link-ajustes" style="display:none;">Ajustes</a>
+      <span class="mono" style="font-size:13px; color:var(--tinta);" id="saludo"></span>
+      <button class="btn btn-fantasma" id="btn-salir" style="padding:10px 18px; font-size:14px;">Salir</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <div class="stats-grid" id="grid-stats"></div>
+
+  <div id="bloque-imprevista" style="display:none;">
+    <button class="btn btn-fantasma" id="btn-toggle-imprevista" style="margin-bottom: 20px;">+ Agregar cita imprevista</button>
+    <div class="form-imprevista" id="form-imprevista-wrap" style="display:none;">
+      <h3>Registrar una cita imprevista</h3>
+      <p class="nota-imprevista">Para un cliente que llegó sin cita — se registra directo como completada, para que cuadre en tus ganancias.</p>
+      <form id="form-imprevista">
+        <div class="fila-2">
+          <div class="campo">
+            <label for="imp-nombre">Nombre (opcional)</label>
+            <input type="text" id="imp-nombre" placeholder="Cliente sin cita">
+          </div>
+          <div class="campo">
+            <label for="imp-telefono">Teléfono (opcional)</label>
+            <input type="tel" id="imp-telefono" placeholder="—">
+          </div>
+        </div>
+        <div class="fila-2">
+          <div class="campo">
+            <label for="imp-servicio">Servicio</label>
+            <select id="imp-servicio" required></select>
+          </div>
+          <div class="campo">
+            <label for="imp-modalidad">Modalidad</label>
+            <select id="imp-modalidad">
+              <option value="local">En el local</option>
+              <option value="domicilio">A domicilio</option>
+            </select>
+          </div>
+        </div>
+        <div class="fila-2">
+          <div class="campo">
+            <label for="imp-costo">Costo cobrado ($)</label>
+            <input type="number" id="imp-costo" min="0" step="10" required>
+          </div>
+          <div class="campo">
+            <label for="imp-hora">Hora</label>
+            <input type="time" id="imp-hora" required>
+          </div>
+        </div>
+        <div class="campo">
+          <label for="imp-notas">Notas (opcional)</label>
+          <input type="text" id="imp-notas" placeholder="Ej. cliente de siempre, pagó en efectivo...">
+        </div>
+        <button type="submit" class="btn btn-dorado" style="width:100%;">Guardar cita imprevista</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <div class="toolbar-filtros">
+      <div class="campo" id="campo-filtro-barbero">
+        <label for="filtro-barbero">Barbero</label>
+        <select id="filtro-barbero" class="filtro-select"><option value="">Todos</option></select>
+      </div>
+      <div class="campo">
+        <label for="filtro-fecha">Fecha</label>
+        <input type="date" id="filtro-fecha" class="filtro-select">
+      </div>
+      <div class="campo">
+        <label for="filtro-estado">Estado</label>
+        <select id="filtro-estado" class="filtro-select">
+          <option value="">Todos</option>
+          <option value="pendiente">Pendiente</option>
+          <option value="confirmada">Confirmada</option>
+          <option value="completada">Completada</option>
+          <option value="cancelada">Cancelada</option>
+        </select>
+      </div>
+    </div>
+    <button class="btn btn-fantasma" id="btn-limpiar-filtros" style="padding:10px 18px; font-size:14px;">Limpiar filtros</button>
+  </div>
+
+  <div class="tabla-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>№</th>
+          <th>Cliente</th>
+          <th>Servicio</th>
+          <th>Modalidad</th>
+          <th>Barbero</th>
+          <th>Fecha / hora</th>
+          <th>Total</th>
+          <th>Estado</th>
+          <th>Reseña</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="cuerpo-tabla"></tbody>
+    </table>
+    <div class="vacio" id="estado-vacio" style="display:none;">
+      <div class="pole" style="width:40px; height:40px;"></div>
+      <p>No hay citas que coincidan con estos filtros.</p>
+    </div>
+  </div>
+
+</main>
+
+<script type="module">
+  import { DB, mostrarToast, formatearFecha } from './data.js';
+
+  // --- protección de la página ---
+  if (!DB.haySesion()) {
+    window.location.href = 'login.html';
+  }
+  const sesion = DB.sesionActual() || {};
+  const esDueno = sesion.tipo === 'dueno';
+
+  document.getElementById('btn-salir').addEventListener('click', () => {
+    DB.cerrarSesion();
+    window.location.href = 'index.html';
+  });
+
+  document.getElementById('chip-rol').textContent = esDueno ? 'Dueño' : 'Barbero';
+  if (esDueno) {
+    document.getElementById('link-empleados').style.display = 'inline';
+    document.getElementById('link-ajustes').style.display = 'inline';
+  }
+
+  const miBarbero = !esDueno ? await DB.barbero(sesion.barberoId) : null;
+  document.getElementById('saludo').textContent = esDueno
+    ? `Hola, ${sesion.usuario}`
+    : `Hola, ${miBarbero ? miBarbero.nombre : sesion.usuario}`;
+
+  // --- citas imprevistas (solo para barberos) ---
+  if (!esDueno) {
+    const bloqueImp = document.getElementById('bloque-imprevista');
+    bloqueImp.style.display = 'block';
+
+    const btnToggleImp = document.getElementById('btn-toggle-imprevista');
+    const formImpWrap = document.getElementById('form-imprevista-wrap');
+    const selImpServicio = document.getElementById('imp-servicio');
+    const selImpModalidad = document.getElementById('imp-modalidad');
+    const inputImpCosto = document.getElementById('imp-costo');
+    const inputImpHora = document.getElementById('imp-hora');
+
+    const serviciosParaImprevista = await DB.obtenerServicios();
+    const configDomicilioImp = await DB.obtenerConfigDomicilio();
+    if (!configDomicilioImp.activo) {
+      document.querySelector('#imp-modalidad option[value="domicilio"]').remove();
+    }
+
+    serviciosParaImprevista.forEach(s => {
+      const opt = document.createElement('option');
+      opt.value = s.id;
+      opt.textContent = `${s.nombre} — $${s.precio}`;
+      selImpServicio.appendChild(opt);
+    });
+
+    function sugerirCostoImprevista() {
+      const s = serviciosParaImprevista.find(x => x.id === selImpServicio.value);
+      const base = s ? s.precio : 0;
+      const esDom = selImpModalidad.value === 'domicilio';
+      inputImpCosto.value = base + (esDom ? Number(configDomicilioImp.recargo) : 0);
+    }
+    selImpServicio.addEventListener('change', sugerirCostoImprevista);
+    selImpModalidad.addEventListener('change', sugerirCostoImprevista);
+
+    function ponerHoraActual() {
+      const ahora = new Date();
+      inputImpHora.value = `${String(ahora.getHours()).padStart(2, '0')}:${String(ahora.getMinutes()).padStart(2, '0')}`;
+    }
+
+    btnToggleImp.addEventListener('click', () => {
+      const abierto = formImpWrap.style.display !== 'none';
+      formImpWrap.style.display = abierto ? 'none' : 'block';
+      btnToggleImp.textContent = abierto ? '+ Agregar cita imprevista' : '– Cerrar formulario';
+      if (!abierto) {
+        sugerirCostoImprevista();
+        ponerHoraActual();
+      }
+    });
+
+    document.getElementById('form-imprevista').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btnGuardar = e.target.querySelector('button[type="submit"]');
+      btnGuardar.disabled = true;
+      btnGuardar.textContent = 'Guardando…';
+
+      const ahora = new Date();
+      const fechaHoy = `${ahora.getFullYear()}-${String(ahora.getMonth() + 1).padStart(2, '0')}-${String(ahora.getDate()).padStart(2, '0')}`;
+
+      try {
+        await DB.crearCita({
+          nombre: document.getElementById('imp-nombre').value.trim() || 'Cliente sin cita',
+          telefono: document.getElementById('imp-telefono').value.trim() || '—',
+          servicioId: selImpServicio.value,
+          barberoId: sesion.barberoId,
+          fecha: fechaHoy,
+          hora: inputImpHora.value,
+          notas: document.getElementById('imp-notas').value.trim(),
+          modalidad: selImpModalidad.value,
+          precioManual: inputImpCosto.value,
+          estadoInicial: 'completada'
+        });
+        mostrarToast('Cita imprevista guardada.');
+        e.target.reset();
+        formImpWrap.style.display = 'none';
+        btnToggleImp.textContent = '+ Agregar cita imprevista';
+      } catch (err) {
+        console.error(err);
+        mostrarToast(`No se pudo guardar: ${err.message || err}`);
+      } finally {
+        btnGuardar.disabled = false;
+        btnGuardar.textContent = 'Guardar cita imprevista';
+      }
+    });
+  }
+
+  // --- filtro de barberos (solo visible/editable si es dueño) ---
+  const filtroBarbero = document.getElementById('filtro-barbero');
+  const todosLosBarberos = await DB.obtenerBarberos();
+  if (esDueno) {
+    todosLosBarberos.forEach(b => {
+      const opt = document.createElement('option');
+      opt.value = b.id;
+      opt.textContent = b.nombre + (b.activo ? '' : ' (baja)');
+      filtroBarbero.appendChild(opt);
+    });
+  } else {
+    document.getElementById('campo-filtro-barbero').style.display = 'none';
+  }
+
+  const filtroFecha = document.getElementById('filtro-fecha');
+  const filtroEstado = document.getElementById('filtro-estado');
+  const cuerpoTabla = document.getElementById('cuerpo-tabla');
+  const estadoVacio = document.getElementById('estado-vacio');
+  const gridStats = document.getElementById('grid-stats');
+
+  let ultimasCitas = []; // se llena en tiempo real por escucharCitas
+
+  async function renderTabla() {
+    const servicios = await DB.obtenerServicios();
+    const barberos = await DB.obtenerBarberos();
+    const servicioPorId = Object.fromEntries(servicios.map(s => [s.id, s]));
+    const barberoPorId = Object.fromEntries(barberos.map(b => [b.id, b]));
+
+    let citas = ultimasCitas.slice().sort((a, b) => {
+      if (a.fecha === b.fecha) return a.hora.localeCompare(b.hora);
+      return a.fecha.localeCompare(b.fecha);
+    });
+
+    // un barbero solo ve sus propias citas, sin excepción
+    if (!esDueno) {
+      citas = citas.filter(c => c.barberoId === sesion.barberoId);
+    }
+
+    const fBarbero = esDueno ? filtroBarbero.value : '';
+    const fFecha = filtroFecha.value;
+    const fEstado = filtroEstado.value;
+
+    const filtradas = citas.filter(c =>
+      (!fBarbero || c.barberoId === fBarbero) &&
+      (!fFecha || c.fecha === fFecha) &&
+      (!fEstado || c.estado === fEstado)
+    );
+
+    cuerpoTabla.innerHTML = '';
+    estadoVacio.style.display = filtradas.length === 0 ? 'block' : 'none';
+
+    filtradas.forEach(c => {
+      const servicio = servicioPorId[c.servicioId];
+      const barbero = barberoPorId[c.barberoId];
+      const total = precioDeCita(c, servicioPorId);
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td class="num-turno">№${c.numero}</td>
+        <td>
+          <div>${c.nombre}</div>
+          <div style="color:var(--tinta); font-size:12px;">${c.telefono}</div>
+        </td>
+        <td>${servicio ? servicio.nombre : '—'}</td>
+        <td>${c.modalidad === 'domicilio' ? 'A domicilio' : 'Local'}</td>
+        <td>${barbero ? barbero.nombre : '—'}</td>
+        <td>${formatearFecha(c.fecha)}<br>${c.hora}</td>
+        <td>$${total}</td>
+        <td><span class="badge badge-${c.estado}">${c.estado}</span></td>
+        <td>${c.calificacion ? `<span class="estrellas-mini">${'★'.repeat(c.calificacion)}${'☆'.repeat(5 - c.calificacion)}</span>` : '<span style="color:var(--tinta); font-size:12px;">Sin calificar</span>'}</td>
+        <td>
+          <div class="celda-acciones">
+            ${c.estado === 'pendiente' ? `<button class="btn-mini" data-accion="confirmar" data-id="${c.id}">Confirmar</button>` : ''}
+            ${c.estado === 'confirmada' ? `<button class="btn-mini" data-accion="completar" data-id="${c.id}">Completar</button>` : ''}
+            ${c.estado !== 'cancelada' && c.estado !== 'completada' ? `<button class="btn-mini" data-accion="cancelar" data-id="${c.id}">Cancelar</button>` : ''}
+            <button class="btn-mini eliminar" data-accion="eliminar" data-id="${c.id}">Eliminar</button>
+          </div>
+        </td>
+      `;
+      cuerpoTabla.appendChild(tr);
+    });
+
+    renderStats(citas, servicioPorId);
+  }
+
+  // precio de una cita: usa el precioTotal guardado; si es una cita vieja sin ese
+  // campo, lo calcula con el precio del servicio (compatibilidad hacia atrás)
+  function precioDeCita(c, servicioPorId) {
+    if (typeof c.precioTotal === 'number') return c.precioTotal;
+    const s = servicioPorId[c.servicioId];
+    return s ? s.precio : 0;
+  }
+
+  function renderStats(citas, servicioPorId) {
+    const hoy = new Date().toISOString().split('T')[0];
+    const inicioSemana = new Date();
+    inicioSemana.setDate(inicioSemana.getDate() - inicioSemana.getDay());
+    const inicioSemanaISO = inicioSemana.toISOString().split('T')[0];
+
+    const activas = citas.filter(c => c.estado !== 'cancelada');
+    const hoyCount = activas.filter(c => c.fecha === hoy).length;
+    const semanaCount = activas.filter(c => c.fecha >= inicioSemanaISO).length;
+    const pendientesCount = citas.filter(c => c.estado === 'pendiente').length;
+
+    const citasConCalif = citas.filter(c => c.calificacion);
+    const relevantes = esDueno ? citasConCalif : citasConCalif.filter(c => c.barberoId === sesion.barberoId);
+    const prom = relevantes.length
+      ? { promedio: (relevantes.reduce((s, c) => s + c.calificacion, 0) / relevantes.length).toFixed(1), total: relevantes.length }
+      : null;
+
+    let tarjetas = [
+      { num: hoyCount, lbl: 'Citas hoy' },
+      { num: semanaCount, lbl: 'Esta semana' },
+      { num: pendientesCount, lbl: 'Pendientes' },
+      { num: prom ? `${prom.promedio} ★` : '—', lbl: `Calificación (${prom ? prom.total : 0} reseñas)` }
+    ];
+
+    const cobrables = citas.filter(c => c.estado === 'confirmada' || c.estado === 'completada');
+
+    if (esDueno) {
+      const ventasHoy = cobrables.filter(c => c.fecha === hoy).reduce((sum, c) => sum + precioDeCita(c, servicioPorId), 0);
+      const ingresosTotales = cobrables.reduce((sum, c) => sum + precioDeCita(c, servicioPorId), 0);
+      tarjetas.push({ num: `$${ventasHoy}`, lbl: 'Ventas de hoy' });
+      tarjetas.push({ num: `$${ingresosTotales}`, lbl: 'Ingresos totales' });
+    } else {
+      const generadoHoy = cobrables.filter(c => c.fecha === hoy).reduce((sum, c) => sum + precioDeCita(c, servicioPorId), 0);
+      const generadoTotal = cobrables.reduce((sum, c) => sum + precioDeCita(c, servicioPorId), 0);
+      tarjetas.push({ num: `$${generadoHoy}`, lbl: 'Generado hoy' });
+      tarjetas.push({ num: `$${generadoTotal}`, lbl: 'Generado en total (a entregar)' });
+    }
+
+    gridStats.innerHTML = tarjetas.map(t => `
+      <div class="stat-card"><div class="num">${t.num}</div><div class="lbl">${t.lbl}</div></div>
+    `).join('');
+  }
+
+  cuerpoTabla.addEventListener('click', async (e) => {
+    const btn = e.target.closest('button[data-accion]');
+    if (!btn) return;
+    const id = btn.dataset.id;
+    const accion = btn.dataset.accion;
+    btn.disabled = true;
+
+    if (accion === 'confirmar') {
+      await DB.actualizarEstado(id, 'confirmada');
+      mostrarToast('Cita confirmada.');
+    } else if (accion === 'completar') {
+      await DB.actualizarEstado(id, 'completada');
+      mostrarToast('Cita marcada como completada. El cliente ya puede calificarla.');
+    } else if (accion === 'cancelar') {
+      await DB.actualizarEstado(id, 'cancelada');
+      mostrarToast('Cita cancelada.');
+    } else if (accion === 'eliminar') {
+      if (confirm('¿Eliminar esta cita permanentemente?')) {
+        await DB.eliminarCita(id);
+        mostrarToast('Cita eliminada.');
+      }
+    }
+    // no hace falta llamar renderTabla(): escucharCitas() detecta el cambio solo
+  });
+
+  [filtroBarbero, filtroFecha, filtroEstado].forEach(el =>
+    el.addEventListener('change', renderTabla)
+  );
+
+  document.getElementById('btn-limpiar-filtros').addEventListener('click', () => {
+    filtroBarbero.value = '';
+    filtroFecha.value = '';
+    filtroEstado.value = '';
+    renderTabla();
+  });
+
+  // --- tiempo real: se actualiza solo cuando cambia algo, desde cualquier dispositivo ---
+  DB.escucharCitas(
+    (citas) => {
+      ultimasCitas = citas;
+      renderTabla();
+    },
+    (err) => {
+      estadoVacio.style.display = 'block';
+      estadoVacio.innerHTML = `<p style="color:#e19a9a;">No se pudo conectar con la base de datos: ${err.message || err}</p>`;
+    }
+  );
+</script>
+
+</body>
+</html>

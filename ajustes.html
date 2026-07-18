@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ajustes — Nikos Barber</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  header {
+    border-bottom: 1px solid var(--linea-suave);
+    background: var(--negro-alt);
+  }
+  .nav { display:flex; align-items:center; justify-content:space-between; padding: 18px 0; flex-wrap: wrap; gap: 14px; }
+  .marca { display:flex; align-items:center; gap:12px; text-decoration:none; }
+  .marca img { height: 38px; width: auto; }
+  .marca span { font-size: 18px; font-style: italic; color: var(--marfil); }
+  .nav-derecha { display:flex; align-items:center; gap:18px; flex-wrap: wrap; }
+  .nav-derecha a.link-panel { font-size: 13px; color: var(--tinta); text-decoration:none; }
+  .nav-derecha a.link-panel:hover { color: var(--dorado-claro); }
+  .nav-derecha a.link-panel.activo { color: var(--dorado-claro); border-bottom: 1px solid var(--dorado-claro); padding-bottom: 2px; }
+
+  main { padding: 44px 0 90px; }
+  .encabezado { margin-bottom: 44px; }
+  .encabezado h1 { font-weight: 300; font-size: 30px; margin-bottom: 8px; }
+  .encabezado p { color: var(--tinta); }
+
+  .bloque { margin-bottom: 64px; }
+  .bloque-titulo { display:flex; align-items:baseline; justify-content:space-between; margin-bottom: 22px; flex-wrap: wrap; gap: 10px; }
+  .bloque-titulo h2 { font-weight: 400; font-size: 20px; }
+  .bloque-titulo p { color: var(--tinta); font-size: 13px; margin: 0; }
+
+  /* --- horario --- */
+  .horario-card {
+    background: var(--negro-alt);
+    border: 1px solid var(--linea);
+    border-radius: var(--radio);
+    padding: 28px 26px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 20px;
+    align-items: end;
+  }
+  .horario-preview { font-size: 12px; color: var(--tinta); margin-top: 18px; grid-column: 1 / -1; }
+  .horario-preview span { color: var(--dorado-claro); }
+
+  /* --- servicios --- */
+  .servicios-tabla { display: flex; flex-direction: column; gap: 1px; background: var(--linea-suave); border: 1px solid var(--linea-suave); border-radius: var(--radio); overflow: hidden; margin-bottom: 22px; }
+  .servicio-fila {
+    background: var(--negro-alt);
+    padding: 16px 20px;
+    display: grid;
+    grid-template-columns: 1.5fr 0.8fr 0.8fr auto;
+    gap: 14px;
+    align-items: center;
+  }
+  .servicio-fila input { padding: 9px 10px; font-size: 13px; }
+  .servicio-fila .campo { margin-bottom: 0; }
+  .servicio-fila label { display:none; }
+  .servicio-fila-acciones { display: flex; gap: 8px; justify-self: end; }
+
+  .btn-mini {
+    padding: 8px 12px;
+    font-size: 12px;
+    border-radius: var(--radio);
+    border: 1px solid var(--linea);
+    background: transparent;
+    color: var(--marfil);
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    white-space: nowrap;
+  }
+  .btn-mini:hover { border-color: var(--dorado); color: var(--dorado-claro); }
+  .btn-mini.eliminar:hover { border-color: #c98c8c; color: #e19a9a; }
+  .btn-mini.guardar { border-color: var(--dorado-op); }
+
+  .agregar-servicio {
+    background: var(--negro-alt);
+    border: 1px dashed var(--linea);
+    border-radius: var(--radio);
+    padding: 20px;
+    display: grid;
+    grid-template-columns: 1.5fr 0.8fr 0.8fr auto;
+    gap: 14px;
+    align-items: end;
+  }
+  .agregar-servicio .campo { margin-bottom: 0; }
+
+  /* --- domicilio --- */
+  .domicilio-card {
+    background: var(--negro-alt);
+    border: 1px solid var(--linea);
+    border-radius: var(--radio);
+    padding: 28px 26px;
+  }
+  .domicilio-switch-fila { display: flex; align-items: center; gap: 16px; margin-bottom: 22px; }
+  .domicilio-switch-titulo { font-size: 15px; margin-bottom: 3px; }
+  .domicilio-switch-nota { font-size: 12.5px; color: var(--tinta); }
+  #campo-recargo { max-width: 360px; margin-bottom: 20px; transition: opacity .2s ease; }
+  #campo-recargo.deshabilitado { opacity: 0.4; pointer-events: none; }
+
+  .toggle-grande {
+    position: relative;
+    width: 52px; height: 30px;
+    border-radius: 100px;
+    border: 1px solid var(--linea);
+    background: transparent;
+    cursor: pointer;
+    flex-shrink: 0;
+    padding: 0;
+  }
+  .toggle-grande::after {
+    content: "";
+    position: absolute;
+    top: 2px; left: 2px;
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: var(--tinta);
+    transition: transform .18s ease, background .18s ease;
+  }
+  .toggle-grande.activo { border-color: var(--dorado); }
+  .toggle-grande.activo::after { transform: translateX(22px); background: var(--dorado-claro); }
+
+  @media (max-width: 860px) {
+    .horario-card { grid-template-columns: 1fr; }
+    .servicio-fila, .agregar-servicio { grid-template-columns: 1fr; }
+    .servicio-fila-acciones { justify-self: stretch; }
+  }
+
+  @media (max-width: 640px) {
+    .marca span { display: none; }
+    .domicilio-switch-fila { align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a href="admin.html" class="marca">
+      <img src="logo.png" alt="" onerror="this.style.display='none'; document.getElementById('marca-fallback').style.display='flex';">
+      <div class="pole" id="marca-fallback" style="display:none;"></div>
+      <span class="display">Nikos Barber</span>
+    </a>
+    <div class="nav-derecha">
+      <a href="admin.html" class="link-panel">Panel</a>
+      <a href="empleados.html" class="link-panel">Empleados</a>
+      <a href="ajustes.html" class="link-panel activo">Ajustes</a>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="encabezado">
+    <h1>Ajustes del negocio</h1>
+    <p>Cambia el horario de atención y los servicios con sus precios. Solo el dueño puede entrar aquí.</p>
+  </div>
+
+  <div class="bloque">
+    <div class="bloque-titulo">
+      <h2>Horario de atención</h2>
+      <p>Define entre qué horas se pueden agendar citas.</p>
+    </div>
+    <form class="horario-card" id="form-horario">
+      <div class="campo">
+        <label for="hora-inicio">Abre</label>
+        <input type="time" id="hora-inicio" required>
+      </div>
+      <div class="campo">
+        <label for="hora-fin">Cierra</label>
+        <input type="time" id="hora-fin" required>
+      </div>
+      <div class="campo">
+        <label for="intervalo">Duración de cada turno</label>
+        <select id="intervalo">
+          <option value="15">15 minutos</option>
+          <option value="20">20 minutos</option>
+          <option value="30">30 minutos</option>
+          <option value="45">45 minutos</option>
+          <option value="60">60 minutos</option>
+        </select>
+      </div>
+      <button type="submit" class="btn btn-dorado" style="grid-column: 1 / -1;">Guardar horario</button>
+      <p class="horario-preview" id="horario-preview"></p>
+    </form>
+  </div>
+
+  <div class="bloque">
+    <div class="bloque-titulo">
+      <h2>Servicios y precios</h2>
+      <p>Edita nombre, duración o precio, y guarda cada fila.</p>
+    </div>
+    <div class="servicios-tabla" id="tabla-servicios"></div>
+
+    <div class="agregar-servicio">
+      <div class="campo">
+        <label>Nombre</label>
+        <input type="text" id="nuevo-nombre" placeholder="Nombre del servicio nuevo">
+      </div>
+      <div class="campo">
+        <label>Minutos</label>
+        <input type="number" id="nuevo-minutos" placeholder="Min" min="5" step="5">
+      </div>
+      <div class="campo">
+        <label>Precio</label>
+        <input type="number" id="nuevo-precio" placeholder="$" min="0" step="10">
+      </div>
+      <button type="button" class="btn btn-fantasma" id="btn-agregar-servicio">+ Agregar servicio</button>
+    </div>
+  </div>
+
+  <div class="bloque">
+    <div class="bloque-titulo">
+      <h2>Servicio a domicilio</h2>
+      <p>Actívalo o desactívalo, y define cuánto más se cobra por la movilidad.</p>
+    </div>
+    <form class="domicilio-card" id="form-domicilio">
+      <div class="domicilio-switch-fila">
+        <button type="button" class="toggle-grande" id="toggle-domicilio"></button>
+        <div>
+          <div class="domicilio-switch-titulo">Ofrecer cortes a domicilio</div>
+          <div class="domicilio-switch-nota">Si lo apagas, el cliente solo va a poder elegir "En el local" al agendar.</div>
+        </div>
+      </div>
+      <div class="campo" id="campo-recargo">
+        <label for="recargo-domicilio">Recargo por movilidad ($ extra sobre el precio del servicio)</label>
+        <input type="number" id="recargo-domicilio" min="0" step="10">
+      </div>
+      <button type="submit" class="btn btn-dorado">Guardar</button>
+    </form>
+  </div>
+</main>
+
+<script type="module">
+  import { DB, mostrarToast } from './data.js';
+
+  if (!DB.haySesion() || DB.sesionActual().tipo !== 'dueno') {
+    window.location.href = DB.haySesion() ? 'admin.html' : 'login.html';
+  }
+
+  // ---------- horario ----------
+  const inputInicio = document.getElementById('hora-inicio');
+  const inputFin = document.getElementById('hora-fin');
+  const selIntervalo = document.getElementById('intervalo');
+  const previewHorario = document.getElementById('horario-preview');
+
+  async function cargarHorario() {
+    try {
+      const config = await DB.obtenerConfigHorario();
+      inputInicio.value = config.inicio;
+      inputFin.value = config.fin;
+      selIntervalo.value = String(config.intervalo);
+      renderPreview();
+    } catch (err) {
+      console.error(err);
+      previewHorario.innerHTML = `<span style="color:#e19a9a;">No se pudo conectar con la base de datos: ${err.message || err}</span>`;
+    }
+  }
+
+  async function renderPreview() {
+    const horas = await DB.obtenerHorarios();
+    previewHorario.innerHTML = horas.length
+      ? `Con esta configuración se generan <span>${horas.length} turnos</span> por barbero al día: de ${horas[0]} a ${horas[horas.length - 1]}.`
+      : 'Revisa las horas: no se genera ningún turno con esta combinación.';
+  }
+
+  document.getElementById('form-horario').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (inputFin.value <= inputInicio.value) {
+      mostrarToast('La hora de cierre debe ser después de la de apertura.');
+      return;
+    }
+    try {
+      await DB.guardarConfigHorario({
+        inicio: inputInicio.value,
+        fin: inputFin.value,
+        intervalo: Number(selIntervalo.value)
+      });
+      renderPreview();
+      mostrarToast('Horario actualizado.');
+    } catch (err) {
+      console.error(err);
+      mostrarToast(`Error al guardar: ${err.message || err}`);
+    }
+  });
+
+  cargarHorario();
+
+  // ---------- servicios ----------
+  const tablaServicios = document.getElementById('tabla-servicios');
+
+  async function renderServicios() {
+    let servicios;
+    try {
+      servicios = await DB.obtenerServicios();
+    } catch (err) {
+      console.error(err);
+      tablaServicios.innerHTML = `<div class="servicio-fila"><p style="color:#e19a9a;">No se pudo conectar con la base de datos: ${err.message || err}</p></div>`;
+      return;
+    }
+    tablaServicios.innerHTML = '';
+
+    if (servicios.length === 0) {
+      tablaServicios.innerHTML = '<div class="servicio-fila"><p style="color:var(--tinta);">No hay servicios todavía.</p></div>';
+      return;
+    }
+
+    servicios.forEach(s => {
+      const fila = document.createElement('div');
+      fila.className = 'servicio-fila';
+      fila.innerHTML = `
+        <div class="campo"><input type="text" value="${s.nombre}" data-campo="nombre" data-id="${s.id}"></div>
+        <div class="campo"><input type="number" value="${s.minutos}" min="5" step="5" data-campo="minutos" data-id="${s.id}"></div>
+        <div class="campo"><input type="number" value="${s.precio}" min="0" step="10" data-campo="precio" data-id="${s.id}"></div>
+        <div class="servicio-fila-acciones">
+          <button class="btn-mini guardar" data-accion="guardar" data-id="${s.id}">Guardar</button>
+          <button class="btn-mini eliminar" data-accion="eliminar" data-id="${s.id}">Eliminar</button>
+        </div>
+      `;
+      tablaServicios.appendChild(fila);
+    });
+  }
+
+  tablaServicios.addEventListener('click', async (e) => {
+    const btn = e.target.closest('[data-accion]');
+    if (!btn) return;
+    const id = btn.dataset.id;
+    const accion = btn.dataset.accion;
+
+    try {
+      if (accion === 'guardar') {
+        const fila = btn.closest('.servicio-fila');
+        const nombre = fila.querySelector('[data-campo="nombre"]').value.trim();
+        const minutos = fila.querySelector('[data-campo="minutos"]').value;
+        const precio = fila.querySelector('[data-campo="precio"]').value;
+        if (!nombre || !minutos || precio === '') {
+          mostrarToast('Completa nombre, minutos y precio.');
+          return;
+        }
+        await DB.editarServicio(id, { nombre, minutos, precio });
+        mostrarToast('Servicio actualizado.');
+        renderServicios();
+      } else if (accion === 'eliminar') {
+        const servicios = await DB.obtenerServicios();
+        const s = servicios.find(x => x.id === id);
+        if (confirm(`¿Eliminar el servicio "${s.nombre}"? Las citas ya agendadas con este servicio conservan su información.`)) {
+          await DB.eliminarServicio(id);
+          mostrarToast('Servicio eliminado.');
+          renderServicios();
+        }
+      }
+    } catch (err) {
+      console.error(err);
+      mostrarToast(`Error: ${err.message || err}`);
+    }
+  });
+
+  document.getElementById('btn-agregar-servicio').addEventListener('click', async () => {
+    const nombre = document.getElementById('nuevo-nombre').value.trim();
+    const minutos = document.getElementById('nuevo-minutos').value;
+    const precio = document.getElementById('nuevo-precio').value;
+
+    if (!nombre || !minutos || precio === '') {
+      mostrarToast('Completa nombre, minutos y precio del nuevo servicio.');
+      return;
+    }
+
+    try {
+      await DB.agregarServicio({ nombre, minutos, precio });
+      document.getElementById('nuevo-nombre').value = '';
+      document.getElementById('nuevo-minutos').value = '';
+      document.getElementById('nuevo-precio').value = '';
+      mostrarToast(`"${nombre}" agregado al catálogo.`);
+      renderServicios();
+    } catch (err) {
+      console.error(err);
+      mostrarToast(`Error al agregar: ${err.message || err}`);
+    }
+  });
+
+  renderServicios();
+
+  // ---------- domicilio ----------
+  const toggleDomicilio = document.getElementById('toggle-domicilio');
+  const campoRecargo = document.getElementById('campo-recargo');
+  const inputRecargo = document.getElementById('recargo-domicilio');
+  let domicilioActivo = true;
+
+  function pintarToggleDomicilio() {
+    toggleDomicilio.classList.toggle('activo', domicilioActivo);
+    campoRecargo.classList.toggle('deshabilitado', !domicilioActivo);
+  }
+
+  async function cargarDomicilio() {
+    const config = await DB.obtenerConfigDomicilio();
+    domicilioActivo = !!config.activo;
+    inputRecargo.value = config.recargo;
+    pintarToggleDomicilio();
+  }
+
+  toggleDomicilio.addEventListener('click', () => {
+    domicilioActivo = !domicilioActivo;
+    pintarToggleDomicilio();
+  });
+
+  document.getElementById('form-domicilio').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    await DB.guardarConfigDomicilio({
+      activo: domicilioActivo,
+      recargo: Number(inputRecargo.value) || 0
+    });
+    mostrarToast('Configuración de domicilio actualizada.');
+  });
+
+  cargarDomicilio();
+</script>
+
+</body>
+</html>
